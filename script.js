@@ -1,80 +1,81 @@
 // script.js
+
 const img = new Image(); // used to load image from <input> and draw to canvas
-  window.URL = window.URL || window.webkitURL;
+const imgInput = document.getElementById('image-input');
+const form = document.getElementById('generate-meme');
+const submitBtn = document.querySelector('button[type=submit]');
+const clear = document.querySelector('button[type=reset]');
 
-  var imgInput = document.getElementById('image-input');//imgInput is the input file of the selected img
-  imgInput.onchange=function(){handleFunction(this.files)};//When the file is selected, we send it to a function to get the URL
+// variables for volumes
+const readtxt = document.querySelector('button[type=button]');
+const volgroup = document.getElementById('volume-group');
+const volicon = volgroup.querySelector('img');
+const volval = volgroup.querySelector('input');
+let volume = 1.0;
 
-  //next 4 lines creates a canvas with black background.
-  var canvas = document.getElementById("user-image");
-  var ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#000000";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  //This function we get the files from the user and creates a URL for these img file.
-   function handleFunction(files){
-   if(files.length)
-   {
-     img.src = window.URL.createObjectURL(files[0]);
-   }
-  }
+// variables for inserting texts
+const topText = document.getElementById('text-top');
+const botText = document.getElementById('text-bottom');
+const canvas = document.getElementById('user-image');
+const ctx = canvas.getContext("2d");
+var inserted = false;
 
 // Fires whenever the img object loads a new image (such as with img.src =)
 img.addEventListener('load', () => {
-  // TODO
-  var imgWidth = img.width;
-  var imgHeight = img.height;
-  var imgInfo = getDimmensions(canvas.width, canvas.height, imgWidth, imgHeight);
-  ctx.drawImage(img, imgInfo.startX, imgInfo.startY, imgInfo.width, imgInfo.height); // draw the selected img on the canvas with correct size
-
-  img.alt=handleInfo(document.getElementById('image-input').files);//change the alt attribute to the name of the img file.
-  
-  function handleInfo(files){
-    if(files.length)
-    {
-      var nameInfo = files[0].name;
-      return nameInfo;
-    }
-  }
-  // Some helpful tips:
-  // - Fill the whole Canvas with black first to add borders on non-square images, then draw on top
-  // - Clear the form when a new image is selected
-  // - If you draw the image to canvas here, it will update as soon as a new image is selected
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = 0;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  let dims = getDimmensions(canvas.width,canvas.height,img.width,img.height);
+  ctx.drawImage(img,dims.startX,dims.startY,dims.width,dims.height);
+  inserted = true;
 });
 
-var submitBtn = document.querySelector("[type='submit']");
-  console.log(submitBtn);
+imgInput.addEventListener('change', () => {
+  img.src = window.URL.createObjectURL(imgInput.files[0]);
+  img.alt = imgInput.files[0].name;
+});
 
-  submitBtn.addEventListener('click', function(event){
-    
-    event.preventDefault();
+submitBtn.addEventListener('click',() => {
+  ctx.font = '30px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'white';
+  if(inserted){
+    ctx.fillText(topText.value,canvas.width/2,35);
+    ctx.fillText(botText.value,canvas.width/2,canvas.height - 10);
+  }
+  else {
+    ctx.strokeText(topText.value,canvas.width/2,35);
+    ctx.strokeText(botText.value,canvas.width/2,canvas.height - 10);
+  }
+  submitBtn.disabled = true;
+  clear.disabled = readtxt.disabled = false;
+});
 
-    var butGroup = document.getElementsByTagName('button');
-    console.log(butGroup);
-    butGroup[1].disabled=false;
-    butGroup[2].disabled=false;
-    console.log(butGroup[1]);
-    console.log(butGroup[2]);
-    var topText = document.getElementById('text-top').value;
-    var botText = document.getElementById('text-bottom').value;
+clear.addEventListener('click',() => {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  imgInput.value = null;
+  submitBtn.disabled = inserted = false;
+  clear.disabled = readtxt.disabled = true;
+});
 
-    ctx.fillStyle="red";
-    ctx.font="50px bold Arial";
-    ctx.textAlign="center";
-    ctx.fillText(topText,200,50);
-    ctx.fillText(botText,200,370);
-    
-    //clear the canvas and button
-    butGroup[1].addEventListener('click', function(){
-      //canvas.remove();
-      ctx.fillStyle='#000000';
-      ctx.fillRect(0,0,400,400);
-      img.onload = function(){window.URL.revokeObjectURL(this.src)}
+readtxt.addEventListener('click',() => {
+  var utter = new SpeechSynthesisUtterance(topText.value+" "+botText.value);
+  utter.volume = volume;
+  speechSynthesis.speak(utter);
+});
 
-      butGroup[1].disabled=true;
-      butGroup[2].disabled=true;
-    });
-  });
+volval.addEventListener('change',() =>{
+  let val = volval.value;
+  volume = val / 100.0;
+  if (val >=67)
+    volicon.src = "icons/volume-level-3.svg";
+  else if(val >= 34)
+    volicon.src = "icons/volume-level-2.svg";
+  else if(val >= 1)
+    volicon.src = "icons/volume-level-1.svg";
+  else
+    volicon.src = "icons/volume-level-0.svg";
+});
 
 /**
  * Takes in the dimensions of the canvas and the new image, then calculates the new
@@ -103,7 +104,7 @@ function getDimmensions(canvasWidth, canvasHeight, imageWidth, imageHeight) {
     startY = 0;
     startX = (canvasWidth - width) / 2;
     // This is for horizontal images now
-  }else {
+  } else {
     // Width is the maximum width possible given the canvas
     width = canvasWidth;
     // Height is then proportional given the width and aspect ratio
