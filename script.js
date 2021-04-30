@@ -65,6 +65,7 @@ var submitBtn = document.querySelector("[type='submit']");
     ctx.fillText(topText,200,50);
     ctx.fillText(botText,200,370);
     
+    //clear the canvas and button
     butGroup[1].addEventListener('click', function(){
       //canvas.remove();
       ctx.fillStyle='#000000';
