@@ -1,11 +1,64 @@
 // script.js
 
 const img = new Image(); // used to load image from <input> and draw to canvas
+  window.URL = window.URL || window.webkitURL;
+
+  var imgInput = document.getElementById('image-input');
+  imgInput.onchange=function(){handleFunction(this.files)};
+  var canvas = document.getElementById("user-image");
+  var ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+
+   function handleFunction(files){
+   if(files.length)
+   {
+     img.src = window.URL.createObjectURL(files[0]);
+
+      //img.onload = function(){window.URL.revokeObjectURL(this.src)}
+    }
+    
+  }
+
 
 // Fires whenever the img object loads a new image (such as with img.src =)
 img.addEventListener('load', () => {
   // TODO
+  console.log(img);
+  var imgWidth = img.width;
+  var imgHeight = img.height;
+  var imgInfo = getDimmensions(canvas.width, canvas.height, imgWidth, imgHeight);
+  ctx.drawImage(img, imgInfo.startX, imgInfo.startY, imgInfo.width, imgInfo.height);
 
+  img.alt=handleInfo(document.getElementById('image-input').files);
+  console.log(img.alt);
+  
+  function handleInfo(files){
+    if(files.length)
+    {
+      var nameInfo = files[0].name;
+      console.log(nameInfo);
+      var r = {};
+      r.img = img; r.src = img.src; r.info=nameInfo;
+      return nameInfo;
+    }
+  }
+
+  
+  var submitBtn = document.querySelector("[type='submit']");
+  console.log(submitBtn);
+  submitBtn.addEventListener('click', function(event){
+    event.preventDefault();
+
+    var topText = document.getElementById('textTop');
+    console.log(topText);
+    var botText = document.getElementById('textBottom');
+    ctx.font = "20px";
+    //ctx.fillText(topText.value,10, 50 );
+    //ctx.fillText(botText.value,10,200);
+  })
+  //topText.onclick
   // Some helpful tips:
   // - Fill the whole Canvas with black first to add borders on non-square images, then draw on top
   // - Clear the form when a new image is selected
@@ -39,7 +92,7 @@ function getDimmensions(canvasWidth, canvasHeight, imageWidth, imageHeight) {
     startY = 0;
     startX = (canvasWidth - width) / 2;
     // This is for horizontal images now
-  } else {
+  }else {
     // Width is the maximum width possible given the canvas
     width = canvasWidth;
     // Height is then proportional given the width and aspect ratio
