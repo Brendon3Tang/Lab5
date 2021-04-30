@@ -2,20 +2,21 @@
 const img = new Image(); // used to load image from <input> and draw to canvas
   window.URL = window.URL || window.webkitURL;
 
-  var imgInput = document.getElementById('image-input');
-  imgInput.onchange=function(){handleFunction(this.files)};
+  var imgInput = document.getElementById('image-input');//imgInput is the input file of the selected img
+  imgInput.onchange=function(){handleFunction(this.files)};//When the file is selected, we send it to a function to get the URL
 
+  //next 4 lines creates a canvas with black background.
   var canvas = document.getElementById("user-image");
   var ctx = canvas.getContext("2d");
   ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
+  //This function we get the files from the user and creates a URL for these img file.
    function handleFunction(files){
    if(files.length)
    {
      img.src = window.URL.createObjectURL(files[0]);
-      //img.onload = function(){window.URL.revokeObjectURL(this.src)}
-    }
+   }
   }
 
 // Fires whenever the img object loads a new image (such as with img.src =)
@@ -24,11 +25,9 @@ img.addEventListener('load', () => {
   var imgWidth = img.width;
   var imgHeight = img.height;
   var imgInfo = getDimmensions(canvas.width, canvas.height, imgWidth, imgHeight);
-  console.log(canvas.width,canvas.height);
-  ctx.drawImage(img, imgInfo.startX, imgInfo.startY, imgInfo.width, imgInfo.height);
+  ctx.drawImage(img, imgInfo.startX, imgInfo.startY, imgInfo.width, imgInfo.height); // draw the selected img on the canvas with correct size
 
-  img.alt=handleInfo(document.getElementById('image-input').files);
-  console.log(img.alt);
+  img.alt=handleInfo(document.getElementById('image-input').files);//change the alt attribute to the name of the img file.
   
   function handleInfo(files){
     if(files.length)
@@ -70,6 +69,7 @@ var submitBtn = document.querySelector("[type='submit']");
       //canvas.remove();
       ctx.fillStyle='#000000';
       ctx.fillRect(0,0,400,400);
+      img.onload = function(){window.URL.revokeObjectURL(this.src)}
 
       butGroup[1].disabled=true;
       butGroup[2].disabled=true;
