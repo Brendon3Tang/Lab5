@@ -1,13 +1,5 @@
 // script.js
 const img = new Image(); // used to load image from <input> and draw to canvas
-
-    //  var submitBtn = document.querySelector("[type='submit']");
-    //  submitBtn.onclick= function getInput(){
-    //      var txt=document.getElementById('text-top').value;
-    //      alert("标签为："+ txt);
-    //  };
-
-
   window.URL = window.URL || window.webkitURL;
 
   var imgInput = document.getElementById('image-input');
