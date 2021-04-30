@@ -1,34 +1,38 @@
 // script.js
-
 const img = new Image(); // used to load image from <input> and draw to canvas
+
+    //  var submitBtn = document.querySelector("[type='submit']");
+    //  submitBtn.onclick= function getInput(){
+    //      var txt=document.getElementById('text-top').value;
+    //      alert("标签为："+ txt);
+    //  };
+
+
   window.URL = window.URL || window.webkitURL;
 
   var imgInput = document.getElementById('image-input');
   imgInput.onchange=function(){handleFunction(this.files)};
+
   var canvas = document.getElementById("user-image");
   var ctx = canvas.getContext("2d");
   ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
-
    function handleFunction(files){
    if(files.length)
    {
      img.src = window.URL.createObjectURL(files[0]);
-
       //img.onload = function(){window.URL.revokeObjectURL(this.src)}
     }
-    
   }
-
 
 // Fires whenever the img object loads a new image (such as with img.src =)
 img.addEventListener('load', () => {
   // TODO
-  console.log(img);
   var imgWidth = img.width;
   var imgHeight = img.height;
   var imgInfo = getDimmensions(canvas.width, canvas.height, imgWidth, imgHeight);
+  console.log(canvas.width,canvas.height);
   ctx.drawImage(img, imgInfo.startX, imgInfo.startY, imgInfo.width, imgInfo.height);
 
   img.alt=handleInfo(document.getElementById('image-input').files);
@@ -38,32 +42,46 @@ img.addEventListener('load', () => {
     if(files.length)
     {
       var nameInfo = files[0].name;
-      console.log(nameInfo);
-      var r = {};
-      r.img = img; r.src = img.src; r.info=nameInfo;
       return nameInfo;
     }
   }
-
-  
-  var submitBtn = document.querySelector("[type='submit']");
-  console.log(submitBtn);
-  submitBtn.addEventListener('click', function(event){
-    event.preventDefault();
-
-    var topText = document.getElementById('textTop');
-    console.log(topText);
-    var botText = document.getElementById('textBottom');
-    ctx.font = "20px";
-    //ctx.fillText(topText.value,10, 50 );
-    //ctx.fillText(botText.value,10,200);
-  })
-  //topText.onclick
   // Some helpful tips:
   // - Fill the whole Canvas with black first to add borders on non-square images, then draw on top
   // - Clear the form when a new image is selected
   // - If you draw the image to canvas here, it will update as soon as a new image is selected
 });
+
+var submitBtn = document.querySelector("[type='submit']");
+  console.log(submitBtn);
+
+  submitBtn.addEventListener('click', function(event){
+    
+    event.preventDefault();
+
+    var butGroup = document.getElementsByTagName('button');
+    console.log(butGroup);
+    butGroup[1].disabled=false;
+    butGroup[2].disabled=false;
+    console.log(butGroup[1]);
+    console.log(butGroup[2]);
+    var topText = document.getElementById('text-top').value;
+    var botText = document.getElementById('text-bottom').value;
+
+    ctx.fillStyle="red";
+    ctx.font="50px bold Arial";
+    ctx.textAlign="center";
+    ctx.fillText(topText,200,50);
+    ctx.fillText(botText,200,370);
+    
+    butGroup[1].addEventListener('click', function(){
+      //canvas.remove();
+      ctx.fillStyle='#000000';
+      ctx.fillRect(0,0,400,400);
+
+      butGroup[1].disabled=true;
+      butGroup[2].disabled=true;
+    });
+  });
 
 /**
  * Takes in the dimensions of the canvas and the new image, then calculates the new
