@@ -1,23 +1,28 @@
 // script.js
 
+// canvas and image
+const canvas = document.getElementById('user-image');
+const ctx = canvas.getContext("2d");
 const img = new Image(); // used to load image from <input> and draw to canvas
 const imgInput = document.getElementById('image-input');
+
+// page components
 const form = document.getElementById('generate-meme');
 const submitBtn = document.querySelector('button[type=submit]');
 const clear = document.querySelector('button[type=reset]');
 
 // variables for volumes
-const readtxt = document.querySelector('button[type=button]');
 const volgroup = document.getElementById('volume-group');
+const voicelist = document.getElementById('voice-selection');
+const readtxt = document.querySelector('button[type=button]');
 const volicon = volgroup.querySelector('img');
 const volval = volgroup.querySelector('input');
+let voices = [];
 let volume = 1.0;
 
 // variables for inserting texts
 const topText = document.getElementById('text-top');
 const botText = document.getElementById('text-bottom');
-const canvas = document.getElementById('user-image');
-const ctx = canvas.getContext("2d");
 var inserted = false;
 
 // Fires whenever the img object loads a new image (such as with img.src =)
@@ -61,6 +66,15 @@ clear.addEventListener('click',() => {
 readtxt.addEventListener('click',() => {
   var utter = new SpeechSynthesisUtterance(topText.value+" "+botText.value);
   utter.volume = volume;
+  
+  // set selected voice
+  let voiceOption = voicelist.selectedOptions[0].getAttribute('data-name');
+  for(let i = 0; i < voices.length; i++){
+    if(voices[i].name === voiceOption) {
+      utter.voice = voices[i];
+    }
+  }
+  
   speechSynthesis.speak(utter);
 });
 
@@ -76,6 +90,35 @@ volval.addEventListener('change',() =>{
   else
     volicon.src = "icons/volume-level-0.svg";
 });
+
+// For voice list initialization
+function setVoiceList() {
+  let nochoice = voicelist.querySelector('option[value=none]');
+  
+  let interv = setInterval(() => { // wait until speechSynthesis is loaded
+    let voices = [];
+    voices = speechSynthesis.getVoices();
+    if(voices.length != 0){
+      // unlock choices
+      voicelist.removeChild(nochoice);
+      voicelist.disabled = false;
+      // update choices
+      for(let i = 0; i < voices.length; i++) {
+        let option = document.createElement('option');
+        option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
+
+        if(voices[i].default) {
+          option.textContent += ' -- DEFAULT';
+        }
+
+        option.setAttribute('data-lang', voices[i].lang);
+        option.setAttribute('data-name', voices[i].name);
+        voicelist.appendChild(option);
+      }
+      clearInterval(interv);
+    }
+  }, 10);  
+}
 
 /**
  * Takes in the dimensions of the canvas and the new image, then calculates the new
