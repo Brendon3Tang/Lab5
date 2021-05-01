@@ -25,6 +25,9 @@ const topText = document.getElementById('text-top');
 const botText = document.getElementById('text-bottom');
 var inserted = false;
 
+// initialize list
+setVoiceList();
+
 // Fires whenever the img object loads a new image (such as with img.src =)
 img.addEventListener('load', () => {
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -66,12 +69,13 @@ clear.addEventListener('click',() => {
 readtxt.addEventListener('click',() => {
   var utter = new SpeechSynthesisUtterance(topText.value+" "+botText.value);
   utter.volume = volume;
-  
-  // set selected voice
-  let voiceOption = voicelist.selectedOptions[0].getAttribute('data-name');
-  for(let i = 0; i < voices.length; i++){
-    if(voices[i].name === voiceOption) {
-      utter.voice = voices[i];
+  if(voices.length != 0){
+    // set selected voice
+    let voiceOption = voicelist.selectedOptions[0].getAttribute('data-name');
+    for(let i = 0; i < voices.length; i++){
+      if(voices[i].name === voiceOption) {
+        utter.voice = voices[i];
+      }
     }
   }
   
@@ -96,7 +100,6 @@ function setVoiceList() {
   let nochoice = voicelist.querySelector('option[value=none]');
   
   let interv = setInterval(() => { // wait until speechSynthesis is loaded
-    let voices = [];
     voices = speechSynthesis.getVoices();
     if(voices.length != 0){
       // unlock choices
@@ -115,6 +118,8 @@ function setVoiceList() {
         option.setAttribute('data-name', voices[i].name);
         voicelist.appendChild(option);
       }
+      console.log(voices);
+      console.log(voices.length);
       clearInterval(interv);
     }
   }, 10);  
