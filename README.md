@@ -6,7 +6,7 @@
 
 ## Part 1:
 
-LINK TO YOUR PUBLISHED SITE
+https://brendon3tang.github.io/Lab5/
 
 ## Part 2:
 
