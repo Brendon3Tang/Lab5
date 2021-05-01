@@ -31,7 +31,7 @@ setVoiceList();
 // Fires whenever the img object loads a new image (such as with img.src =)
 img.addEventListener('load', () => {
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle = 0;
+  ctx.fillStyle = '#000;
   ctx.fillRect(0,0,canvas.width,canvas.height);
   let dims = getDimmensions(canvas.width,canvas.height,img.width,img.height);
   ctx.drawImage(img,dims.startX,dims.startY,dims.width,dims.height);
